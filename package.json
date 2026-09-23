@@ -1,0 +1,95 @@
+{
+  "name": "cirno-frost-ide",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A focused, modern Python IDE with Pyright LSP, interactive terminals, and isolated package management.",
+  "author": "Cirno Frost IDE",
+  "type": "module",
+  "main": "electron/main.mjs",
+  "scripts": {
+    "dev": "concurrently -k \"vite --host 127.0.0.1\" \"wait-on tcp:5173 && cross-env VITE_DEV_SERVER_URL=http://127.0.0.1:5173 electron .\"",
+    "build": "tsc --noEmit && vite build",
+    "test:integration": "npm run build && npm run test:helpers && npm run test:pdf && npm run test:pty && npm run test:lsp && npm run test:shutdown",
+    "test:helpers": "node work\\test-input-helpers.mjs",
+    "test:pdf": "node work\\test-pdf.cjs",
+    "test:pty": "cross-env ELECTRON_RUN_AS_NODE=1 node_modules\\electron\\dist\\electron.exe work\\test-pty.cjs",
+    "test:lsp": "cross-env ELECTRON_RUN_AS_NODE=1 node_modules\\electron\\dist\\electron.exe work\\test-lsp.cjs",
+    "test:shutdown": "node work\\test-shutdown.cjs",
+    "preview": "vite preview",
+    "start": "electron .",
+    "rebuild": "electron-builder install-app-deps",
+    "dist": "npm run build && electron-builder --win nsis"
+  },
+  "dependencies": {
+    "@lydell/node-pty": "^1.2.0-beta.15",
+    "@monaco-editor/react": "^4.7.0",
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/xterm": "^6.0.0",
+    "lucide-react": "^0.544.0",
+    "monaco-editor": "^0.56.0",
+    "pdfjs-dist": "^6.3.289",
+    "pyright": "^1.1.414",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-resizable-panels": "^4.12.4",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^6.1.1",
+    "concurrently": "^10.0.5",
+    "cross-env": "^10.0.0",
+    "electron": "43.2.0",
+    "electron-builder": "^26.15.3",
+    "typescript": "^7.0.0",
+    "vite": "^8.3.0",
+    "wait-on": "^9.0.1"
+  },
+  "build": {
+    "appId": "dev.frostide.app",
+    "productName": "Frost IDE",
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/@lydell/node-pty/**",
+      "node_modules/@lydell/node-pty-win32-x64/**",
+      "node_modules/pyright/**"
+    ],
+    "files": [
+      "dist/**",
+      "electron/**",
+      "node_modules/**",
+      "package.json"
+    ],
+    "directories": {
+      "output": "outputs"
+    },
+    "extraResources": [
+      {
+        "from": "runtime/python",
+        "to": "runtime/python",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "artifactName": "${productName}-${version}-setup.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
+  "allowScripts": {
+    "electron-winstaller@5.4.0": true,
+    "electron@43.2.0": true
+  },
+  "overrides": {
+    "dompurify": "3.4.13"
+  }
+}

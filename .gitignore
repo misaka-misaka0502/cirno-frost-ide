@@ -1,0 +1,14 @@
+node_modules/
+dist/
+release/
+outputs/
+runtime/
+.vite/
+*.log
+.DS_Store
+Thumbs.db
+
+# Local test/runtime downloads
+work/get-pip.py
+work/python-*.exe
+work/python-*-embed-*.zip
